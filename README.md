@@ -1,6 +1,6 @@
 # Öğrenci Sınav Sonuçlarını Tahmin Etme (Predicting Student Test Scores)
 
-Bu projede ben `data/` klasöründeki veri setini kullanarak öğrencilerin sınav puanlarını tahmin etmeye çalışıyorum. Aşağıda repo içeriğini ve `main.ipynb` içindeki adımları benim bakış açıma uygun, "ben" diliyle özetledim.
+Bu projede ben `data/` klasöründeki veri setini kullanarak öğrencilerin sınav puanlarını tahmin etmeye çalışıyorum. 
 
 ## Dosyalar
 - `main.ipynb` — Benim hazırladığım uçtan uca notebook: veri yükleme, EDA, feature engineering, K-Fold güvenli target encoding, LightGBM ile model eğitimi (5-fold CV) ve submission oluşturma.
@@ -31,7 +31,7 @@ Bu projede ben `data/` klasöründeki veri setini kullanarak öğrencilerin sın
    - Son adımda tüm eğitim verisiyle tek bir LightGBM modeli eğittim ve test seti için tahminler üreterek `submission.csv` dosyasını oluşturdum.
 
 7. Tekrar üretilebilirlik (reproducibility)
-   - Çalışmalarımda `random_state` değerleri kullandım. Tam deterministik davranış istersen `n_jobs=1` ve LightGBM için ek seed parametreleri eklemeyi öneriyorum.
+   - Çalışmalarımda `random_state` değerleri kullandım. 
 
 8. Notlar ve öneriler
    - Target encoding uyguladıktan sonra ham kategorik sütunları kullanmamak veri sızıntısını azaltır; notebook'ta bunu uyguladım.
@@ -48,6 +48,5 @@ pip install pandas numpy scikit-learn lightgbm xgboost catboost matplotlib seabo
 
 3. `main.ipynb`'yi açın ve hücreleri sırayla çalıştırın. Notebook `data/` klasöründeki dosyaları okur ve kök dizine `submission.csv` yazar.
 
-## İleri adımlar
-İsterseniz `requirements.txt` oluşturayım, model denemeleri/ensemble ekleyeyim veya notebook'u tek seferde çalıştıran bir betik ekleyeyim. Hangi adımı istersiniz?
+
 
