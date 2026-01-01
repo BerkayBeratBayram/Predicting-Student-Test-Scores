@@ -1,33 +1,53 @@
-# Predicting Student Test Scores
+# Öğrenci Sınav Sonuçlarını Tahmin Etme (Predicting Student Test Scores)
 
-This repository contains a Jupyter notebook that builds a machine learning pipeline to predict student exam scores using the dataset in the `data/` folder.
+Bu projede ben `data/` klasöründeki veri setini kullanarak öğrencilerin sınav puanlarını tahmin etmeye çalışıyorum. Aşağıda repo içeriğini ve `main.ipynb` içindeki adımları benim bakış açıma uygun, "ben" diliyle özetledim.
 
-## Files
-- `main.ipynb` — end-to-end notebook: EDA, feature engineering, K-Fold safe target encoding, LightGBM training (5-fold CV), and submission generation.
-- `data/train.csv`, `data/test.csv`, `data/sample_submission.csv` — dataset files (committed to the repo).
-- `submission.csv` — example output produced by the notebook.
+## Dosyalar
+- `main.ipynb` — Benim hazırladığım uçtan uca notebook: veri yükleme, EDA, feature engineering, K-Fold güvenli target encoding, LightGBM ile model eğitimi (5-fold CV) ve submission oluşturma.
+- `data/train.csv`, `data/test.csv`, `data/sample_submission.csv` — Kullanılan veri seti dosyaları.
+- `submission.csv` — Notebook'u çalıştırdığımda ürettiğim örnek çıktı.
 
-## Quick start
-1. Create (or activate) a Python environment with the required packages.
+## `main.ipynb` içinde ne yaptım (adım adım)
+1. Ortam ve kütüphaneler
+   - Gerekli kütüphaneleri (`pandas`, `numpy`, `scikit-learn`, `lightgbm`, `xgboost`, `catboost`, `matplotlib`, `seaborn`, vb.) import ediyorum.
 
-Recommended minimal install:
+2. Veri yükleme ve ön inceleme (EDA)
+   - `data/train.csv` ve `data/test.csv` dosyalarını okudum; boyutları, sütun isimlerini ve ilk birkaç satırı inceledim.
+   - Eksik değerlerin sayısını kontrol ettim ve sayısal sütunların korelasyon matrisi ile `exam_score` ilişkisine baktım.
 
-```powershell
-pip install -r requirements.txt
-```
+3. Basit feature engineering
+   - `study_efficiency` (çalışma verimliliği), `study_sleep_ratio`, `study_x_attendance`, `sleep_x_study` gibi oran/etkileşim özellikleri oluşturdum.
 
-If you don't have `requirements.txt`, install these packages:
+4. Kategorik sütunları belirleme
+   - Veri tipi `object` olan sütunları kategorik olarak aldım ve target encoding uygulamak üzere listeledim.
+
+5. K-Fold güvenli Target Encoding (OOF)
+   - K-fold out-of-fold target encoding ile kategorik değişkenleri `_te` suffix'li düzenlenmiş ortalamalara çevirdim.
+   - Her fold için yalnızca train fold'u kullanarak OOF encode hesapladım; test için ise tüm eğitim verisi üzerinden smooth edilmiş ortalamayı uyguladım.
+   - Target encoding sonrası ham kategorik sütunları düşürdüm; böylece yalnızca sayısal ve `_te` sütunlarla model eğittim.
+
+6. Modelleme: 5-Fold CV ve LightGBM
+   - 5-Fold ile modelleri eğittim, her fold için doğrulama setinde RMSE hesapladım ve fold'lar arası ortalama ile standart sapmayı raporladım.
+   - Son adımda tüm eğitim verisiyle tek bir LightGBM modeli eğittim ve test seti için tahminler üreterek `submission.csv` dosyasını oluşturdum.
+
+7. Tekrar üretilebilirlik (reproducibility)
+   - Çalışmalarımda `random_state` değerleri kullandım. Tam deterministik davranış istersen `n_jobs=1` ve LightGBM için ek seed parametreleri eklemeyi öneriyorum.
+
+8. Notlar ve öneriler
+   - Target encoding uyguladıktan sonra ham kategorik sütunları kullanmamak veri sızıntısını azaltır; notebook'ta bunu uyguladım.
+   - Performansı düşürmek veya yükseltmek için şunları deneyebilirsiniz: hiperparametre optimizasyonu (GridSearch/Optuna), CatBoost/XGBoost denemeleri, stacking/ensemble yöntemleri, daha kapsamlı feature engineering.
+
+## Nasıl çalıştırırım (kısa)
+1. Sanal ortam oluşturun veya etkinleştirin.
+
+2. Gerekli paketleri yükleyin (örnek):
 
 ```powershell
 pip install pandas numpy scikit-learn lightgbm xgboost catboost matplotlib seaborn
 ```
 
-2. Open the notebook: `main.ipynb` and run cells in order. The notebook reads data from the `data/` folder and writes `submission.csv` to the repo root.
+3. `main.ipynb`'yi açın ve hücreleri sırayla çalıştırın. Notebook `data/` klasöründeki dosyaları okur ve kök dizine `submission.csv` yazar.
 
-3. Notes:
-- The notebook implements K-Fold out-of-fold target encoding to avoid target leakage; raw categorical columns are dropped after encoding.
-- For reproducible LightGBM runs, fix `random_state`, `n_jobs=1`, and set LightGBM seeds if deterministic behavior is required.
-- The `data/` files are included here for convenience. If you prefer not to track them with git, revert the `.gitignore` entry.
+## İleri adımlar
+İsterseniz `requirements.txt` oluşturayım, model denemeleri/ensemble ekleyeyim veya notebook'u tek seferde çalıştıran bir betik ekleyeyim. Hangi adımı istersiniz?
 
-## Contact
-If you want changes (add experiments, CI, or scripts for training), tell me and I can add them.
